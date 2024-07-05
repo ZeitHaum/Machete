@@ -1,7 +1,7 @@
 ifeq ($(MODE), DEBUG)
-CFLAG += -g -fsanitize=address
+CFLAG += -g -fsanitize=address -march=haswell
 else 
-CFLAG += -O3 -DNDEBUG
+CFLAG += -O3 -DNDEBUG -march=haswell
 endif
 
 .PHONY: clean
