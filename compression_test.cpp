@@ -36,6 +36,11 @@ static inline ssize_t machete_decompress_lorenzo1_hybrid(uint8_t* input , ssize_
         return machete_decompress<lorenzo1,hybrid>(input, size, output);
 }
 
+
+static inline ssize_t machete_decompress_lorenzo1_simd_hybrid(uint8_t* input , ssize_t size, double* output, double error) {
+        return machete_decompress<simd_lorenzo,hybrid>(input, size, output);
+}
+
 static inline ssize_t SZ_compress_wrapper(double* input, ssize_t len, uint8_t** output, double error) {
         return SZ_compress(input, len, output, error);
 }
@@ -57,6 +62,7 @@ struct {
         Perf perf;
 } compressors[] = {
         { "Machete",    Type::Lossy,    machete_compress<lorenzo1, hybrid>,     machete_decompress_lorenzo1_hybrid,     empty},
+        { "MacheteSIMD",    Type::Lossy,    machete_compress<simd_lorenzo, hybrid>,     machete_decompress_lorenzo1_simd_hybrid,     empty},
         { "LFZip",      Type::Lossy,    lfzip_compress,                         lfzip_decompress,                       empty},
         { "SZ3",        Type::Lossy,    SZ_compress_wrapper,                    SZ_decompress_wrapper,                  empty},
         { "Gorilla",    Type::Lossless, gorilla_encode,                         gorilla_decode,                         empty},
@@ -78,10 +84,10 @@ struct {
         // { "GeoLife",    "./example_data/Geolife"   , 5E-6}, 
         // { "GeoLife",    "./example_data/Geolife"   , 1E-6}, 
         // { "GeoLife",    "./example_data/Geolife"   , 5E-7}, 
-        { "System",     "./example_data/System"   , 1E-1},
-        { "System",     "./example_data/System"   , 5E-2}, 
-        { "System",     "./example_data/System"   , 1E-2},
-        { "System",     "./example_data/System"   , 5E-3},
+        // { "System",     "./example_data/System"   , 1E-1},
+        // { "System",     "./example_data/System"   , 5E-2}, 
+        // { "System",     "./example_data/System"   , 1E-2},
+        // { "System",     "./example_data/System"   , 5E-3},
         { "System",     "./example_data/System"   , 1E-3},
         // { "REDD",       "./example_data/redd"      , 5E-2}, 
         // { "REDD",       "./example_data/redd"      , 1E-2},
@@ -94,11 +100,11 @@ struct {
 };
 
 // List of compressors to be evaluated (use indices in the "compressors" array above)
-int compressor_list[] = {0, 1, 2, 3, 4, 5, 6, 7, EOL};
+int compressor_list[] = {0, 1, EOL};
 // List of datasets to be evaluated (use indices in the "datasets" array above)
-int dataset_list[] = {0, 2, 4, EOL}; 
+int dataset_list[] = {0, EOL}; 
 // List of slice lengths to be evaluated
-int bsize_list[] = {500, 1000, 2000, EOL};
+int bsize_list[] = {500, EOL};
 
 ///////////////////////// Setting End ////////////////////////////
 

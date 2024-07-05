@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 enum Encoder {huffman, huffmanC, ovlq, hybrid};
-enum Predictor {lorenzo1};
+enum Predictor {lorenzo1, simd_lorenzo};
 
 template<Predictor p, Encoder e>
 ssize_t machete_compress(double* input, ssize_t len, uint8_t** output, double error);

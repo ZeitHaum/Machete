@@ -67,8 +67,11 @@ enum Encoder {huffman, huffmanC, ovlq, hybrid};
 
 ssize_t lorenzo1_diff(double* input, ssize_t len, int32_t* output, double error, uint8_t** predictor_out, ssize_t* psize);
 ssize_t lorenzo1_correct(int32_t* input, ssize_t len, double* output, uint8_t* predictor_out, ssize_t psize);
+ssize_t simd_lorenzo1_diff(double* input, ssize_t len, int32_t* output, double error, uint8_t** predictor_out, ssize_t* psize);
+ssize_t simd_lorenzo1_correct(int32_t* input, ssize_t len, double* output, uint8_t* predictor_out, ssize_t psize);
 
-enum Predictor {lorenzo1};
+
+enum Predictor {lorenzo1, simd_lorenzo};
 
 template<Predictor p, Encoder e>
 ssize_t machete_compress(double* input, ssize_t len, uint8_t** output, double error);

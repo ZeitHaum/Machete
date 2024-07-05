@@ -1,4 +1,5 @@
 #include "defs.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct __attribute__((__packed__)) {
@@ -17,6 +18,7 @@ template<Predictor p>
 ssize_t predict_diff_phase(double* input, ssize_t len, int32_t* output, double error, uint8_t** predictor_out, ssize_t* psize) {
         switch (p) {
                 case lorenzo1: return lorenzo1_diff(input, len, output, error, predictor_out, psize);
+                case simd_lorenzo: return simd_lorenzo1_diff(input, len, output, error, predictor_out, psize);
         }
         return -1;
 }
@@ -24,6 +26,7 @@ template<Predictor p>
 ssize_t predict_correct_phase(int32_t* input, ssize_t len, double* output, uint8_t* predictor_out, ssize_t psize) {
         switch (p) {
                 case lorenzo1: return lorenzo1_correct(input, len, output, predictor_out, psize);
+                case simd_lorenzo: return simd_lorenzo1_correct(input, len, output, predictor_out, psize);
         }
         return -1;
 }
@@ -118,14 +121,21 @@ ssize_t machete_decompress(uint8_t* input, ssize_t size, double* output) {
         return header->data_len;
 }
 
-decltype(&machete_compress<lorenzo1,huffman>) _func_compress[] = {
+decltype(&machete_compress<simd_lorenzo,huffman>) _func_compress[] = {
         machete_compress<lorenzo1, huffman>,
         machete_compress<lorenzo1, ovlq>,
         machete_compress<lorenzo1, hybrid>,
+        machete_compress<simd_lorenzo, huffman>,
+        machete_compress<simd_lorenzo, ovlq>,
+        machete_compress<simd_lorenzo, hybrid>,
 };
 
-decltype(&machete_decompress<lorenzo1, huffman>) _func_decompress[] = {
+decltype(&machete_decompress<simd_lorenzo, huffman>) _func_decompress[] = {
         machete_decompress<lorenzo1, huffman>,
         machete_decompress<lorenzo1, ovlq>,
         machete_decompress<lorenzo1, hybrid>,
+        machete_decompress<simd_lorenzo, huffman>,
+        machete_decompress<simd_lorenzo, ovlq>,
+        machete_decompress<simd_lorenzo, hybrid>,
 };
+

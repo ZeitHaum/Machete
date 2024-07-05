@@ -7,3 +7,4 @@ tmp
 tmp.cmp
 tmp.data 
 compression_test
+build.sh
