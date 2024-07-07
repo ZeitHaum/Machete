@@ -82,7 +82,7 @@ struct {
         // { "GeoLife",    "./example_data/Geolife"   , 5E-5}, 
         // { "GeoLife",    "./example_data/Geolife"   , 1E-5}, 
         // { "GeoLife",    "./example_data/Geolife"   , 5E-6}, 
-        // { "GeoLife",    "./example_data/Geolife"   , 1E-6}, 
+        { "GeoLife",    "./example_data/Geolife"   , 1E-6}, 
         // { "GeoLife",    "./example_data/Geolife"   , 5E-7}, 
         // { "System",     "./example_data/System"   , 1E-1},
         // { "System",     "./example_data/System"   , 5E-2}, 
@@ -92,17 +92,23 @@ struct {
         // { "REDD",       "./example_data/redd"      , 5E-2}, 
         // { "REDD",       "./example_data/redd"      , 1E-2},
         // { "REDD",       "./example_data/redd"      , 5E-3}, 
-        // { "REDD",       "./example_data/redd"      , 1E-3}, 
+        { "REDD",       "./example_data/redd"      , 1E-3}, 
         // { "Stock",      "./example_data/stock"     , 1E-2}, 
         // { "Stock",      "./example_data/stock"     , 5E-3},
         // { "Stock",      "./example_data/stock"     , 1E-3},
-        // { "Stock",      "./example_data/stock"     , 5E-4},
-};
+        { "Stock",      "./example_data/stock"     , 5E-4},
+        //New added Test data
+        // { "Cycle",     "./example_data/Cycle"   , 1E-1},
+        // { "Cycle",     "./example_data/Cycle"   , 5E-2},
+        // { "Cycle",     "./example_data/Cycle"   , 1E-2},
+        // { "Cycle",     "./example_data/Cycle"   , 5E-3},
+        // { "Cycle",     "./example_data/Cycle"   , 1E-3},
 
+};
 // List of compressors to be evaluated (use indices in the "compressors" array above)
 int compressor_list[] = {0, 1, EOL};
 // List of datasets to be evaluated (use indices in the "datasets" array above)
-int dataset_list[] = {0, EOL}; 
+int dataset_list[] = {0, 1, 2, 3, EOL}; 
 // List of slice lengths to be evaluated
 int bsize_list[] = {500, EOL};
 

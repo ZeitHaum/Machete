@@ -10,3 +10,7 @@ compression_test
 build.sh
 FlameGraph
 perf*
+example_data/Geolife
+example_data/redd
+example_data/stock
+example_data/Cycle
