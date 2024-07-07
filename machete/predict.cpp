@@ -93,10 +93,6 @@ ssize_t simd_lorenzo1_diff(double* input, ssize_t len, int32_t* output, double e
         return len - 1;
 }
 
-typedef __m128i v4i;
-typedef __m256i v8i;
-typedef __m256 v8;
-
 ssize_t simd_lorenzo1_correct(int32_t* input, ssize_t len, double* output, uint8_t* predictor_out, ssize_t psize) {
         LorenzoConfig* config = reinterpret_cast<LorenzoConfig*>(predictor_out);
         double e2 = config->error * 0.999 * 2;
@@ -112,8 +108,10 @@ ssize_t simd_lorenzo1_correct(int32_t* input, ssize_t len, double* output, uint8
                 }
                 int32_t temp_array[8];
                 for (; i+8 < len; i+=8) {
-                        //Prefix(Split to 2 part)
-                        v8i x = _mm256_load_si256((v8i*)(&(input[i])));  
+                        /**
+                         * Step 1. Calculate Presum.
+                        */
+                        __m256i x = _mm256_load_si256((__m256i*)(&(input[i])));  
                         // x = (1, 2, 3, 4, 5, 6, 7, 8)              
                         x = _mm256_add_epi32(x, _mm256_slli_si256(x, 4));
                         // x = (1, 1+2, 2+3, 3+4, 5, 5+6, 6+7, 7+8)
@@ -121,22 +119,25 @@ ssize_t simd_lorenzo1_correct(int32_t* input, ssize_t len, double* output, uint8
                         // x = (1, 1+2, 1+2+3, 1+2+3+4, 5, 5+6, 5+6+7, 5+6+7+8)
                         int32_t fourth_value = _mm256_extract_epi32(x, 3);
                         // extract fourth value(1+2+3+4)
-                        v8i add_value = _mm256_set1_epi32(fourth_value);
+                        __m256i add_value = _mm256_set1_epi32(fourth_value);
                         // add_value all eqauls fourth value
-                        v8i sum_value = _mm256_add_epi32(x, add_value);
+                        __m256i sum_value = _mm256_add_epi32(x, add_value);
                         // sum_value = (1+1+2+3+4, 1+2+1+2+3+4, 1+2+3+1+2+3+4, 1+2+3+4+1+2+3+4, 5+1+2+3+4, 5+6+1+2+3+4, 5+6+7+1+2+3+4, 5+6+7+8+1+2+3+4)
                         x = _mm256_blend_epi32(x, sum_value, 0xF0);
                         //Only remain high 4 int32_t, x = (1, 1+2, 1+2+3, 1+2+3+4, 1+2+3+4+5, 1+2+3+4+5+6, 1+2+3+4+5+6+7, 1+2+3+4+5+6+7+8)
-                        _mm256_storeu_si256((v8i*) temp_array, x);
-                        output[i+1] = output[i] + e2 * temp_array[0];
-			output[i+2] = output[i] + e2 * temp_array[1];
-			output[i+3] = output[i] + e2 * temp_array[2];
-			output[i+4] = output[i] + e2 * temp_array[3];
-			output[i+5] = output[i] + e2 * temp_array[4];
-			output[i+6] = output[i] + e2 * temp_array[5];
-			output[i+7] = output[i] + e2 * temp_array[6];
-			output[i+8] = output[i] + e2 * temp_array[7];
 
+                        /**
+                         * Step 2. ALU Calculation 
+                        */
+                        //Convert to double
+                        __m512i x_512 = _mm512_cvtepi32_epi64(x);
+                        __m512d x_d = _mm512_cvtepi64_pd(x_512);
+                        __m512d e_vec = _mm512_set1_pd(e2);
+                        __m512d out_vec = _mm512_set1_pd(output[i]);
+                        //Calculate output = out_vec +  e_vec * x
+                        __m512d result =  _mm512_add_pd(_mm512_mul_pd(x_d, e_vec), out_vec);
+                        //Store result
+                        _mm512_storeu_pd(output+i+1, result);
                 }
                 //Handle the left Bytes.
                 for (; i < len; i++) {

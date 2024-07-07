@@ -1,7 +1,7 @@
 ifeq ($(MODE), DEBUG)
-CFLAG += -g -fsanitize=address -march=haswell
+CFLAG += -g -fsanitize=address -march=skylake-avx512
 else 
-CFLAG += -O3 -DNDEBUG -march=haswell
+CFLAG += -O3 -DNDEBUG -march=skylake-avx512
 endif
 
 .PHONY: clean

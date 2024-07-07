@@ -8,3 +8,5 @@ tmp.cmp
 tmp.data 
 compression_test
 build.sh
+FlameGraph
+perf*
